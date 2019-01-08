@@ -5,6 +5,7 @@ package main
 import (
 	"./internal/suggest"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	//"os"
@@ -79,6 +80,21 @@ func main() {
 	res := gocodeAutoComplete(filename, file, cursor)
 
 	log.Println(res.Candidates)
+	log.Println(res.Len)
+
+	log.Println("-----------------------------")
+
+	s := "我阿里斯顿就发了算法对接奥森"
+
+	for _, item := range file {
+		fmt.Printf("%s", item)
+	}
+
+	// 字符输出为utf8
+	log.Printf("%s", s)
+	// log.Printf(len(s))
+	// log.Printf(len([]rune(s)))
+	// log.Printf(len([]byte(s)))
 
 	log.Println("--EOF--")
 

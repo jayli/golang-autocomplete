@@ -1,3 +1,4 @@
+// 中文
 package main
 
 import "fmt"

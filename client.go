@@ -3,8 +3,8 @@
 package main
 
 import (
+	"./internal/suggest"
 	"flag"
-	"gocode/internal/suggest"
 	"io/ioutil"
 	"log"
 	//"os"
@@ -51,19 +51,17 @@ func gocodeAutoComplete(filename string, file []byte, cursor int64) *AutoComplet
 		candidates = []suggest.Candidate{}
 	}
 
-	var res = &AutoCompleteReply{
+	return &AutoCompleteReply{
 		Candidates: candidates,
 		Len:        d,
 	}
-
-	return res
 }
 
 func main() {
 	flag.Parse()
 
 	if debugger == true {
-		*g_input = "client.go"
+		*g_input = "example/cal_go.go"
 	} else {
 
 	}

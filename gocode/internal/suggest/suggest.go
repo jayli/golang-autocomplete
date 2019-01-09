@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -111,8 +112,12 @@ func (c *Config) Suggest(filename string, data []byte, cursor int) ([]Candidate,
 func (c *Config) analyzePackage(filename string, data []byte, cursor int) (*token.FileSet, token.Pos, *types.Package, []*ast.ImportSpec) {
 	var tags string
 	parsed, _ := parser.ParseFile(token.NewFileSet(), filename, data, parser.ParseComments)
+	log.Println("-----")
+	log.Println(parsed)
+	log.Println("-----")
 	if parsed != nil && len(parsed.Comments) > 0 {
 		buildTagText := parsed.Comments[0].Text()
+		log.Println(buildTagText)
 		if strings.HasPrefix(buildTagText, "+build ") {
 			tags = strings.TrimPrefix(buildTagText, "+build ")
 		}
@@ -135,6 +140,7 @@ func (c *Config) analyzePackage(filename string, data []byte, cursor int) (*toke
 			filename: data,
 		},
 		ParseFile: func(fset *token.FileSet, parseFilename string, _ []byte) (*ast.File, error) {
+			// jayli here
 			var src interface{}
 			var filePos token.Pos
 			mode := parser.DeclarationErrors

@@ -32,21 +32,23 @@ func gocodeAutoComplete(filename string, file []byte, cursor int64) *AutoComplet
 		Dir: filepath.Dir(filename),
 	}
 
-	/*
-		Candidates := []suggest.Candidate{
-			{Class: "PANIC", Name: "PANIC", Type: "PANIC"},
-		}
-	*/
+	//log.Println("file: ", file)
 
 	cfg := suggest.Config{
 		Context:            Context,
 		Builtin:            false,
-		IgnoreCase:         true,
+		IgnoreCase:         false,
 		UnimportedPackages: false,
 		Logf:               func(string, ...interface{}) {},
 	}
 
-	candidates, d := cfg.Suggest(filename, file, int(cursor))
+	// candidates, d := cfg.Suggest(filename, file, int(cursor))
+	f := "/Users/bachi/jayli/golang-autocomplete/example/cal_go.go"
+	data, _ := ioutil.ReadFile(f)
+	candidates, d := cfg.Suggest(f, data, 268)
+
+	log.Println("candidates: ", candidates)
+
 	if candidates == nil {
 		candidates = []suggest.Candidate{}
 	}
@@ -69,12 +71,8 @@ func main() {
 	cursor, _ = strconv.ParseInt(*g_cursor, 10, 0)
 
 	if debugger == true {
-		cursor = 269
+		cursor = 268
 	}
-
-	log.Println("file: ", file)
-	log.Println("filename: ", filename)
-	log.Println("cursor: ", cursor)
 
 	log.Println("-----------------------------")
 
@@ -84,6 +82,7 @@ func main() {
 	log.Println(res.Len)
 
 	log.Println("-----------------------------")
+	log.Println("------------EOF---------------")
 
 	// prepareFilenameDataCursor()
 }

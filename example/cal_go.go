@@ -1,8 +1,15 @@
-// kkkkkk 
+// kkkkkk
 package main
 
 import "fmt"
 import "time"
+
+func funcName() error {
+
+	var count2 string
+	return count2
+
+}
 
 func main() {
 	t1 := time.Now()
@@ -13,7 +20,5 @@ func main() {
 	}
 	t2 := time.Now()
 	fmt.Printf("cost:%d,count:%d\n", t2.Sub(t1)/1000000000, count)
-
-	fmt.
 
 }

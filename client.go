@@ -6,12 +6,12 @@ package main
 import (
 	"./internal/suggest"
 	"flag"
-	"io/ioutil"
-	"log"
-	//"os"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -63,6 +63,25 @@ func gocodeAutoComplete(filename string, file []byte, cursor int64) *AutoComplet
 	}
 }
 
+func funcName1() {
+
+	var aaaaaaa int
+	var bbbbbbb int
+	aaaaaaa = 1
+	bbbbbbb = 2
+
+	log.Println(aaaaaaa)
+	log.Println(bbbbbbb)
+	return
+
+}
+
+func funcName2() {
+
+	return
+
+}
+
 func main() {
 	flag.Parse()
 
@@ -78,47 +97,41 @@ func main() {
 		cursor = 268
 	}
 
-	src := `
-
-		// kkkkkk 
-		package main
-
-		import "fmt"
-		import "time"
-
-		func main() {
-			t1 := time.Now()
-			count := int64(0)
-			max := int64(9000000000)
-			for i := int64(0); i < max; i++ {
-				count += i
-			}
-			t2 := time.Now()
-			fmt.Printf("cost:%d,count:%d\n", t2.Sub(t1)/1000000000, count)
-		}
-	`
+	//source_file := "/Users/bachi/jayli/golang-autocomplete/example/cal_go.go"
+	source_file := "/Users/bachi/jayli/golang-autocomplete/example/test.go"
 
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, "src.go", src, parser.ParseComments)
+	f, err := parser.ParseFile(fset, source_file, nil, parser.AllErrors)
 
 	if err != nil {
 		panic(err)
 	}
 
-	cmap := ast.NewCommentMap(fset, f, f.Comments)
+	log.Println("--")
+	ast.Print(fset, f)
+	log.Println("--")
 
-	_ = cmap
-	log.Println(">>>", f)
+	log.Println(">>")
+	log.Println("<<")
 
-	log.Println("-----------------------------")
+	ast.Inspect(f, func(n ast.Node) bool {
+		var s string
+		switch x := n.(type) {
+		case *ast.BasicLit:
+			s = x.Value
+		case *ast.Ident:
+			s = x.Name
+		}
+
+		if s != "" {
+			// fmt.Printf("\t%s\n", s)
+		}
+		return true
+	})
 
 	// res := gocodeAutoComplete(filename, file, cursor)
 
-	// log.Println("res.Candidates:", res.Candidates)
-	// log.Println("res.Len:", res.Len)
-
-	// log.Println("-----------------------------")
 	log.Println("------------EOF---------------")
 
-	// prepareFilenameDataCursor()
+	os.Exit(1)
 }

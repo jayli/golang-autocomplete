@@ -117,7 +117,6 @@ func (c *Config) analyzePackage(filename string, data []byte, cursor int) (*toke
 	log.Println("-----")
 	if parsed != nil && len(parsed.Comments) > 0 {
 		buildTagText := parsed.Comments[0].Text()
-		log.Println(buildTagText)
 		if strings.HasPrefix(buildTagText, "+build ") {
 			tags = strings.TrimPrefix(buildTagText, "+build ")
 		}
@@ -178,6 +177,7 @@ func (c *Config) analyzePackage(filename string, data []byte, cursor int) (*toke
 		},
 	}
 	pkgs, err := packages.Load(cfg, fmt.Sprintf("file=%v", filename))
+	// log.Println(">", fmt.Sprintf("file=%v", filename))
 	if len(pkgs) <= 0 { // ignore errors
 		c.Logf("no package found for %s: %v", filename, err)
 		return nil, token.NoPos, nil, nil

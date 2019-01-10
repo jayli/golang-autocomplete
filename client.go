@@ -8,6 +8,9 @@ import (
 	"io/ioutil"
 	"log"
 	//"os"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"path/filepath"
 	"strconv"
 )
@@ -74,14 +77,46 @@ func main() {
 		cursor = 268
 	}
 
+	src := `
+
+		// kkkkkk 
+		package main
+
+		import "fmt"
+		import "time"
+
+		func main() {
+			t1 := time.Now()
+			count := int64(0)
+			max := int64(9000000000)
+			for i := int64(0); i < max; i++ {
+				count += i
+			}
+			t2 := time.Now()
+			fmt.Printf("cost:%d,count:%d\n", t2.Sub(t1)/1000000000, count)
+		}
+	`
+
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "src.go", src, parser.ParseComments)
+
+	if err != nil {
+		panic(err)
+	}
+
+	cmap := ast.NewCommentMap(fset, f, f.Comments)
+
+	_ = cmap
+	log.Println(">>>", f)
+
 	log.Println("-----------------------------")
 
-	res := gocodeAutoComplete(filename, file, cursor)
+	// res := gocodeAutoComplete(filename, file, cursor)
 
-	log.Println(res.Candidates)
-	log.Println(res.Len)
+	// log.Println("res.Candidates:", res.Candidates)
+	// log.Println("res.Len:", res.Len)
 
-	log.Println("-----------------------------")
+	// log.Println("-----------------------------")
 	log.Println("------------EOF---------------")
 
 	// prepareFilenameDataCursor()

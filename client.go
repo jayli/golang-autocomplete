@@ -76,9 +76,14 @@ func funcName1() {
 
 }
 
-func funcName2() {
+type ConstList struct {
+	Candidates []suggest.Candidate
+	Len        int
+}
 
-	return
+func getGlobalConst() []ConstList {
+
+	return nil
 
 }
 

@@ -7,7 +7,11 @@ import (
 
 // kkk
 
-func funcName() (string,int) {
+const global_var string = "xxxxx"
+const local_var string = "yyyy"
+
+func funcName() (string, int) {
+	const inner_global_var string = "zzzzzz"
 	var aaaaaaa string
 	return aaaaaaa, 1
 }

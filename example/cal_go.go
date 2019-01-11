@@ -11,7 +11,16 @@ func funcName() error {
 
 }
 
-func main() {
+type NewFunction struct {
+	a string
+}
+
+func (nf NewFunction) doSth() {
+
+}
+
+func main(nf NewFunction) {
+	tt := nf
 	t1 := time.Now()
 	count := int64(0)
 	max := int64(9000000000)

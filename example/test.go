@@ -1,4 +1,4 @@
-package main
+package test_pkg
 
 import (
 	"log"
@@ -12,6 +12,7 @@ const local_var string = "yyyy"
 
 func funcName() (string, int) {
 	const inner_global_var string = "zzzzzz"
+
 	var aaaaaaa string
 	return aaaaaaa, 1
 }

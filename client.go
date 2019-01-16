@@ -87,6 +87,27 @@ func getGlobalConst() []ConstList {
 
 }
 
+func getImports(f *ast.File) []string {
+	var imports_map []string
+	imports_map = make([]string, 0)
+
+	for _, v := range f.Imports {
+		imports_map = append(imports_map, v.Path.Value)
+	}
+	return imports_map
+}
+
+func getPkg(f *ast.File) string {
+	// 判断key 是否存在，map 的成员操作
+
+	var test_map map[string]string
+	test_map = map[string]string{}
+
+	test_map["adf"] = "sdfdsf"
+	return test_map.adf
+
+}
+
 func main() {
 	flag.Parse()
 
@@ -113,10 +134,15 @@ func main() {
 	}
 
 	log.Println("--")
-	ast.Print(fset, f)
+	ast.Print(fset, f.Name)
 	log.Println("--")
 
 	log.Println(">>")
+	log.Println(getImports(f))
+	log.Println("<<")
+
+	log.Println(">>")
+	log.Println(getPkg(f))
 	log.Println("<<")
 
 	ast.Inspect(f, func(n ast.Node) bool {

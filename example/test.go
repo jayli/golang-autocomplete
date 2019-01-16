@@ -26,4 +26,5 @@ func main() {
 	a = map[string]string{"a": "b"}
 	log.Println(a.(map[string]string))
 	log.Println(reflect.TypeOf(a))
+
 }

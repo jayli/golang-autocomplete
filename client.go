@@ -99,13 +99,7 @@ func getImports(f *ast.File) []string {
 
 func getPkg(f *ast.File) string {
 	// 判断key 是否存在，map 的成员操作
-
-	var test_map map[string]string
-	test_map = map[string]string{}
-
-	test_map["adf"] = "sdfdsf"
-	return test_map.adf
-
+	return f.Name.Name
 }
 
 func main() {
@@ -137,13 +131,9 @@ func main() {
 	ast.Print(fset, f.Name)
 	log.Println("--")
 
-	log.Println(">>")
-	log.Println(getImports(f))
-	log.Println("<<")
+	log.Println(">>getImports: ", getImports(f))
 
-	log.Println(">>")
-	log.Println(getPkg(f))
-	log.Println("<<")
+	log.Println(">>getPkg: ", getPkg(f))
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		var s string

@@ -99,6 +99,9 @@ func getImports(f *ast.File) []string {
 
 func getPkg(f *ast.File) string {
 	// 判断key 是否存在，map 的成员操作
+
+	// log.Println(">>>>>> ", reflect.TypeOf(nil))
+
 	return f.Name.Name
 }
 
@@ -128,27 +131,27 @@ func main() {
 	}
 
 	log.Println("--")
-	ast.Print(fset, f.Name)
+	ast.Print(fset, f.Decls)
 	log.Println("--")
 
 	log.Println(">>getImports: ", getImports(f))
 
 	log.Println(">>getPkg: ", getPkg(f))
 
-	ast.Inspect(f, func(n ast.Node) bool {
-		var s string
-		switch x := n.(type) {
-		case *ast.BasicLit:
-			s = x.Value
-		case *ast.Ident:
-			s = x.Name
-		}
+	// ast.Inspect(f, func(n ast.Node) bool {
+	// 	var s string
+	// 	switch x := n.(type) {
+	// 	case *ast.BasicLit:
+	// 		s = x.Value
+	// 	case *ast.Ident:
+	// 		s = x.Name
+	// 	}
 
-		if s != "" {
-			// fmt.Printf("\t%s\n", s)
-		}
-		return true
-	})
+	// 	if s != "" {
+	// 		// fmt.Printf("\t%s\n", s)
+	// 	}
+	// 	return true
+	// })
 
 	// res := gocodeAutoComplete(filename, file, cursor)
 

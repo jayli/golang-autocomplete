@@ -125,6 +125,7 @@ func getValueSpecNames(vsp *ast.Spec) ([]string, []string) {
 
 		// 如何判断 kind 的类型 为 const
 		// 结构体实例怎么比较
+		// 对象比较怎么做 reflect Value
 		log.Println(">>>>>>>>>>>>>>>>>       ", reflect.TypeOf(id.Obj.Decl), "|", fmt.Sprint(kind))
 
 		if kind == "const" {

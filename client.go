@@ -6,6 +6,7 @@ package main
 import (
 	"./internal/suggest"
 	"flag"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -13,7 +14,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
+	"strings"
 )
 
 var g_input = flag.String("in", "", "输入文件")
@@ -92,17 +95,79 @@ func getImports(f *ast.File) []string {
 	imports_map = make([]string, 0)
 
 	for _, v := range f.Imports {
-		imports_map = append(imports_map, v.Path.Value)
+		imports_map = append(imports_map, strings.Replace(v.Path.Value, "\"", "", -1))
 	}
 	return imports_map
 }
 
-func getPkg(f *ast.File) string {
-	// 判断key 是否存在，map 的成员操作
-
+func getPkgs(f *ast.File) []string {
 	// log.Println(">>>>>> ", reflect.TypeOf(nil))
+	var pkgs []string
+	pkgs = make([]string, 0)
+	log.Println(reflect.TypeOf(f.Name.Name))
+	return append(pkgs, f.Name.Name)
+}
 
-	return f.Name.Name
+// 返回  常量，变量
+func getValueSpecNames(vsp *ast.Spec) ([]string, []string) {
+	var const_names []string
+	var var_names []string
+	const_names = make([]string, 0)
+	var_names = make([]string, 0)
+
+	// log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>              ", *vsp)
+
+	for _, id := range (*vsp).(*ast.ValueSpec).Names {
+
+		// 这里的数据类型应该是什么？
+		var kind = id.Obj.Kind.String()
+		var name = id.Obj.Name
+
+		// 如何判断 kind 的类型 为 const
+		// 结构体实例怎么比较
+		log.Println(">>>>>>>>>>>>>>>>>       ", reflect.TypeOf(id.Obj.Decl), "|", fmt.Sprint(kind))
+
+		if kind == "const" {
+			const_names = append(const_names, name)
+		}
+
+		if kind == "var" {
+			var_names = append(var_names, name)
+		}
+	}
+	return const_names, var_names
+}
+
+func getConsts(f *ast.File) []string {
+
+	var consts []string
+	consts = make([]string, 0)
+
+	for _, decl := range f.Decls {
+		// 这里的代码怎么简化 判断类型的
+		if fmt.Sprintf("%v", reflect.TypeOf(decl)) != "*ast.GenDecl" { //|| decl.(*ast.GenDecl).Tok != "const" {
+			continue
+		}
+
+		if fmt.Sprintf("%v", decl.(*ast.GenDecl).Tok) != "const" {
+			continue
+		}
+
+		for _, vsp := range decl.(*ast.GenDecl).Specs {
+			// log.Println(">>>>>>>>>>>>>>>>>>>            ", vsp)
+			tmp_consts, _ := getValueSpecNames(&vsp)
+			consts = append(consts, tmp_consts...)
+		}
+	}
+
+	return consts
+}
+
+func LogRootMembers(f []ast.Decl) {
+	log.Println(reflect.TypeOf(f))
+	for _, v := range f {
+		log.Println(reflect.TypeOf(v))
+	}
 }
 
 func main() {
@@ -133,10 +198,11 @@ func main() {
 	log.Println("--")
 	ast.Print(fset, f.Decls)
 	log.Println("--")
+	LogRootMembers(f.Decls)
 
 	log.Println(">>getImports: ", getImports(f))
-
-	log.Println(">>getPkg: ", getPkg(f))
+	log.Println(">>getPkgs: ", getPkgs(f))
+	log.Println(">>getConsts: ", getConsts(f))
 
 	// ast.Inspect(f, func(n ast.Node) bool {
 	// 	var s string

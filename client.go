@@ -108,32 +108,24 @@ func getPkgs(f *ast.File) []string {
 	return append(pkgs, f.Name.Name)
 }
 
-// 返回  常量，变量
+// 返回一个 Spec 中的  常量列表，变量列表
 func getValueSpecNames(vsp *ast.Spec) ([]string, []string) {
 	var const_names []string
 	var var_names []string
 	const_names = make([]string, 0)
 	var_names = make([]string, 0)
 
-	// log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>              ", *vsp)
-
 	for _, id := range (*vsp).(*ast.ValueSpec).Names {
-
-		// 这里的数据类型应该是什么？
 		var kind = id.Obj.Kind.String()
 		var name = id.Obj.Name
 
-		// 如何判断 kind 的类型 为 const
-		// 结构体实例怎么比较
-		// 对象比较怎么做 reflect Value
-		log.Println(">>>>>>>>>>>>>>>>>       ", reflect.TypeOf(id.Obj.Decl), "|", fmt.Sprint(kind))
-
-		if kind == "const" {
+		switch kind {
+		case "const":
 			const_names = append(const_names, name)
-		}
-
-		if kind == "var" {
+		case "var":
 			var_names = append(var_names, name)
+		default:
+			// Do Nothing
 		}
 	}
 	return const_names, var_names
@@ -145,22 +137,28 @@ func getConsts(f *ast.File) []string {
 	consts = make([]string, 0)
 
 	for _, decl := range f.Decls {
-		// 这里的代码怎么简化 判断类型的
-		if fmt.Sprintf("%v", reflect.TypeOf(decl)) != "*ast.GenDecl" { //|| decl.(*ast.GenDecl).Tok != "const" {
+		// 类型断言
+		if _, ok := decl.(*ast.GenDecl); ok == false {
 			continue
 		}
 
-		if fmt.Sprintf("%v", decl.(*ast.GenDecl).Tok) != "const" {
-			continue
-		}
+		/*
+			// 另一种类型断言的方法
+			if fmt.Sprint(reflect.TypeOf(decl)) != "*ast.GenDecl" {
+				continue
+			}
+		*/
 
-		for _, vsp := range decl.(*ast.GenDecl).Specs {
-			// log.Println(">>>>>>>>>>>>>>>>>>>            ", vsp)
-			tmp_consts, _ := getValueSpecNames(&vsp)
-			consts = append(consts, tmp_consts...)
+		// 判断 struct 成员是否合法
+		var field reflect.Value = reflect.ValueOf(decl).Elem().FieldByName("Tok")
+
+		if field.IsValid() && fmt.Sprint(decl.(*ast.GenDecl).Tok) == "const" {
+			for _, vsp := range decl.(*ast.GenDecl).Specs {
+				tmp_consts, _ := getValueSpecNames(&vsp)
+				consts = append(consts, tmp_consts...)
+			}
 		}
 	}
-
 	return consts
 }
 

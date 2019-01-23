@@ -10,6 +10,21 @@ import (
 const global_var string = "xxxxx"
 const local_var string = "yyyy"
 
+type Global_type_struct struct {
+	Logf               string
+	Context            []string
+	Builtin            bool
+	IgnoreCase         bool
+	UnimportedPackages bool
+}
+
+var (
+	g_is_server = 1
+	g_cache     = 2
+	g_format    = 3
+	g_input     = 4
+)
+
 func funcName() (string, int) {
 	const inner_global_var string = "zzzzzz"
 

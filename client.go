@@ -95,7 +95,6 @@ func getGlobalImports(f *ast.File) []string {
 }
 
 func getGlobalPkgs(f *ast.File) []string {
-	// log.Println(">>>>>> ", reflect.TypeOf(nil))
 	var pkgs []string
 	pkgs = make([]string, 0)
 	return append(pkgs, f.Name.Name)
@@ -116,35 +115,51 @@ func getValueSpecNames(vsp *ast.Spec) *GlobalIdent {
 		types:  make([]string, 0),
 	}
 
-	/*****/
-	local_vsp := (*vsp).(*ast.ValueSpec)
-	/*****/
+	switch (*vsp).(type) {
+	case *ast.ValueSpec:
+		local_vsp := (*vsp).(*ast.ValueSpec)
+		for _, id := range local_vsp.Names {
+			var kind = id.Obj.Kind.String()
+			var name = id.Obj.Name
 
-	// switch vsp.(type) {
-	// case *ast.ValueSpec:
-	// 	local_vsp := (*vsp).(*ast.ValueSpec)
-	// case *ast.TypeSpec:
-	// 	local_vsp := (*vsp).(*ast.TypeSpec)
-	// default:
-	// 	local_vsp := (*vsp).(*ast.ValueSpec)
-	// }
-
-	for _, id := range local_vsp.Names {
-		var kind = id.Obj.Kind.String()
-		var name = id.Obj.Name
-
-		switch kind {
-		case "const":
-			global_ident.consts = append(global_ident.consts, name)
-		case "var":
-			global_ident.vars = append(global_ident.vars, name)
-		case "type":
-			global_ident.types = append(global_ident.types, name)
-		default:
-			// Do Nothing
+			switch kind {
+			case "const":
+				global_ident.consts = append(global_ident.consts, name)
+			case "var":
+				global_ident.vars = append(global_ident.vars, name)
+			default:
+				// Do Nothing
+			}
 		}
+	case *ast.TypeSpec:
+		// type 语法不会像 const 和 var 一样用括号一次定义一堆
+		local_vsp := (*vsp).(*ast.TypeSpec)
+		global_ident.types = append(global_ident.types, local_vsp.Name.Name)
+	default:
+		// Do Nothing
 	}
+
 	return global_ident
+}
+
+func getGlobalTypes(f *ast.File) []string {
+	var types []string
+	types = make([]string, 0)
+
+	for _, decl := range f.Decls {
+		if _, ok := decl.(*ast.GenDecl); ok == false {
+			continue
+		}
+
+		if fmt.Sprint(decl.(*ast.GenDecl).Tok) == "type" {
+			for _, vsp := range decl.(*ast.GenDecl).Specs {
+				tmp_types := getValueSpecNames(&vsp).types
+				types = append(types, tmp_types...)
+			}
+		}
+
+	}
+	return types
 }
 
 // getVars
@@ -158,8 +173,6 @@ func getGlobalVars(f *ast.File) []string {
 			continue
 		}
 		var field reflect.Value = reflect.ValueOf(decl).Elem().FieldByName("Tok")
-		// TODO 处理TypeSpec类型
-		log.Println("----------------------        ", reflect.TypeOf(decl.(*ast.GenDecl).Specs[0]).String())
 		if field.IsValid() && fmt.Sprint(decl.(*ast.GenDecl).Tok) == "var" {
 			for _, vsp := range decl.(*ast.GenDecl).Specs {
 				tmp_vars := getValueSpecNames(&vsp).vars
@@ -181,13 +194,6 @@ func getGlobalConsts(f *ast.File) []string {
 		if _, ok := decl.(*ast.GenDecl); ok == false {
 			continue
 		}
-
-		/*
-			// 另一种类型断言的方法
-			if fmt.Sprint(reflect.TypeOf(decl)) != "*ast.GenDecl" {
-				continue
-			}
-		*/
 
 		// 判断 struct 成员是否合法
 		var field reflect.Value = reflect.ValueOf(decl).Elem().FieldByName("Tok")
@@ -242,6 +248,7 @@ func main() {
 	log.Println(">>getPkgs: \t\t", getGlobalPkgs(f))
 	log.Println(">>getConsts: \t", getGlobalConsts(f))
 	log.Println(">>getVars: \t\t", getGlobalVars(f))
+	log.Println(">>getTypes: \t\t", getGlobalTypes(f))
 
 	// ast.Inspect(f, func(n ast.Node) bool {
 	// 	var s string

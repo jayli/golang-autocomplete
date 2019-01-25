@@ -43,4 +43,6 @@ func main() {
 	log.Println(a.(map[string]string))
 	log.Println(reflect.TypeOf(a))
 
+	// if aaaa :=
+
 }

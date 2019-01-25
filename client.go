@@ -84,6 +84,8 @@ type ConstList struct {
 	Len        int
 }
 
+// 这里要处理以路径方式引入进来的 pkgs
+// 比如 [go/ast go/parser go/token go/types]
 func getGlobalImports(f *ast.File) []string {
 	var imports_map []string
 	imports_map = make([]string, 0)
@@ -208,6 +210,20 @@ func getGlobalConsts(f *ast.File) []string {
 	return consts
 }
 
+func getGlobalFuncs(f *ast.File) []string {
+	var funcs []string
+	funcs = make([]string, 0)
+
+	for _, decl := range f.Decls {
+		if _, ok := decl.(*ast.FuncDecl); ok == false {
+			continue
+		}
+		funcs = append(funcs, decl.(*ast.FuncDecl).Name.Name)
+	}
+
+	return funcs
+}
+
 func LogRootMembers(f []ast.Decl) {
 	for _, v := range f {
 		log.Println(reflect.ValueOf(v))
@@ -230,7 +246,11 @@ func main() {
 	}
 
 	//source_file := "/Users/bachi/jayli/golang-autocomplete/example/cal_go.go"
-	source_file := "/Users/bachi/jayli/golang-autocomplete/example/test.go"
+	var source_file string
+	source_file = "/Users/bachi/jayli/golang-autocomplete/gocode/utils.go"
+	source_file = "/Users/bachi/jayli/golang-autocomplete/gocode/internal/suggest/candidate.go"
+	source_file = "/Users/bachi/jayli/golang-autocomplete/gocode/internal/suggest/suggest.go"
+	source_file = "/Users/bachi/jayli/golang-autocomplete/example/test.go"
 
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, source_file, nil, parser.AllErrors)
@@ -248,7 +268,8 @@ func main() {
 	log.Println(">>getPkgs: \t\t", getGlobalPkgs(f))
 	log.Println(">>getConsts: \t", getGlobalConsts(f))
 	log.Println(">>getVars: \t\t", getGlobalVars(f))
-	log.Println(">>getTypes: \t\t", getGlobalTypes(f))
+	log.Println(">>getTypes: \t", getGlobalTypes(f))
+	log.Println(">>getFuncs: \t", getGlobalFuncs(f))
 
 	// ast.Inspect(f, func(n ast.Node) bool {
 	// 	var s string

@@ -288,7 +288,7 @@ func main() {
 
 	// res := gocodeAutoComplete(filename, file, cursor)
 
-	log.Println("------------EOF-B---------------")
+	log.Println("------------EOF-A---------------")
 
 	os.Exit(1)
 }

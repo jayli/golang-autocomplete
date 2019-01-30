@@ -13,6 +13,8 @@ const local_var string = "yyyy"
 type Global_type_struct struct {
 	Logf               string
 	Context            []string
+	ContextAAA         []string
+	ContextBBB         []string
 	Builtin            bool
 	IgnoreCase         bool
 	UnimportedPackages bool
@@ -26,7 +28,7 @@ var (
 )
 
 func funcName() (string, int) {
-	const inner_global_var string = "zzzzzz"
+	const inner_global_var string = "gzzzzz"
 
 	var aaaaaaa string
 	return aaaaaaa, 1

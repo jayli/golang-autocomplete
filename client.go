@@ -4,7 +4,6 @@
 package main
 
 import (
-	"./internal/suggest"
 	"flag"
 	"fmt"
 	"go/ast"
@@ -29,43 +28,6 @@ var cursor int64
 // 本地调试
 const debugger bool = true
 
-type AutoCompleteReply struct {
-	Candidates []suggest.Candidate
-	Len        int
-}
-
-func gocodeAutoComplete(filename string, file []byte, cursor int64) *AutoCompleteReply {
-	Context := &suggest.PackedContext{
-		Dir: filepath.Dir(filename),
-	}
-
-	//log.Println("file: ", file)
-
-	cfg := suggest.Config{
-		Context:            Context,
-		Builtin:            false,
-		IgnoreCase:         false,
-		UnimportedPackages: false,
-		Logf:               func(string, ...interface{}) {},
-	}
-
-	// candidates, d := cfg.Suggest(filename, file, int(cursor))
-	f := "/Users/bachi/jayli/golang-autocomplete/example/cal_go.go"
-	data, _ := ioutil.ReadFile(f)
-	candidates, d := cfg.Suggest(f, data, 268)
-
-	log.Println("candidates: ", candidates)
-
-	if candidates == nil {
-		candidates = []suggest.Candidate{}
-	}
-
-	return &AutoCompleteReply{
-		Candidates: candidates,
-		Len:        d,
-	}
-}
-
 func funcName1() {
 
 	var aaaaaaa int
@@ -77,11 +39,6 @@ func funcName1() {
 	log.Println(bbbbbbb)
 	return
 
-}
-
-type ConstList struct {
-	Candidates []suggest.Candidate
-	Len        int
 }
 
 // 这里要处理以路径方式引入进来的 pkgs
@@ -234,7 +191,7 @@ func main() {
 	flag.Parse()
 
 	if debugger == true {
-		*g_input = "example/cal_go.go"
+		*g_input = "example/test.go"
 	}
 
 	file, _ = ioutil.ReadFile(*g_input)
@@ -242,8 +199,18 @@ func main() {
 	cursor, _ = strconv.ParseInt(*g_cursor, 10, 0)
 
 	if debugger == true {
-		cursor = 268
+		cursor = 497
 	}
+
+	log.Println("------------[[[---------------")
+	log.Println("------------[[[---------------")
+	cc, a, b := deduceCursorContext(file, int(cursor))
+	fmt.Print(string(file))
+	log.Println(">>>   ", cc)
+	log.Println(">>>   ", a)
+	log.Println(">>>   ", b)
+	log.Println("------------]]]---------------")
+	log.Println("------------]]]---------------")
 
 	//source_file := "/Users/bachi/jayli/golang-autocomplete/example/cal_go.go"
 	var source_file string
@@ -260,7 +227,7 @@ func main() {
 	}
 
 	log.Println("--")
-	ast.Print(fset, f.Decls)
+	// ast.Print(fset, f.Decls)
 	log.Println("--")
 	LogRootMembers(f.Decls)
 
@@ -270,6 +237,8 @@ func main() {
 	log.Println(">>getVars: \t\t", getGlobalVars(f))
 	log.Println(">>getTypes: \t", getGlobalTypes(f))
 	log.Println(">>getFuncs: \t", getGlobalFuncs(f))
+
+	log.Println("------------EOF-A---------------")
 
 	// ast.Inspect(f, func(n ast.Node) bool {
 	// 	var s string
@@ -288,7 +257,7 @@ func main() {
 
 	// res := gocodeAutoComplete(filename, file, cursor)
 
-	log.Println("------------EOF-A---------------")
+	log.Println("------------EOF-B---------------")
 
 	os.Exit(1)
 }

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-go run client.go -cursor=269
+go run *.go -cursor=269

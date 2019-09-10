@@ -4,26 +4,10 @@ package main
 import "fmt"
 import "time"
 
-func funcName() error {
-
-	var count2 string
-	return count2
-
-}
-
-type NewFunction struct {
-	a string
-}
-
-func (nf NewFunction) doSth() {
-
-}
-
-func main(nf NewFunction) {
-	tt := nf
+func main() {
 	t1 := time.Now()
 	count := int64(0)
-	max := int64(9000000000)
+	max := int64(900)
 	for i := int64(0); i < max; i++ {
 		count += i
 	}
